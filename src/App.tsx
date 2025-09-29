@@ -14,7 +14,7 @@ import User from "./pages/Users";
 function App() {
   let globaleContext= useContext(UserContext)
   
-  const [isAuthenticated, setisAuthenticated] = useState(globaleContext?.isAuthenticated)
+  // const [isAuthenticated, setisAuthenticated] = useState(globaleContext?.isAuthenticated)
   return (
     <>
       <Router>

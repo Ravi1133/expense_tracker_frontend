@@ -56,7 +56,7 @@ function Transaction() {
         data.transactionDate = data.transactionDate
         // setTransactions([...transactions, data]);
         let userData = getUserData()
-        let transaction = {}
+        
         if (!userData?.id) return
         if (isEdit) {
             if (!data.id) return
@@ -66,13 +66,13 @@ function Transaction() {
             }
 
             // Pass id along with the data
-            const transaction = await updateTransaction({ ...data });
+             await updateTransaction({ ...data });
             toast.success("Transaction Updated");
             setIsEdit(false)
             reset({ ...defaultState })
         } else {
 
-            let transaction = await addTransaction({ ...data, userId: userData.id })
+            await addTransaction({ ...data, userId: userData.id })
             toast.success("Transaction Added")
 
         }

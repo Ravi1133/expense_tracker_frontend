@@ -1,6 +1,5 @@
-import { useContext, type JSX } from "react";
+import {  type JSX } from "react";
 import { Navigate } from "react-router-dom";
-import { UserContext } from "./AuthContaxt";
 import Header from "../pages/Header";
 
 type ProtectedRouteProps = {

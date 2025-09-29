@@ -22,13 +22,7 @@ type UserContextType = {
     isAuthenticated: boolean;
     categories?: CategoryResponse["categories"]
 };
-type LoginResponse = {
-    email: string,
-    gender: string,
-    token: string,
-    id: number,
-    status: string
-}
+
 export const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -69,6 +63,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         let categories = await getAllCategory()
         setcategories(categories.categories)
     }
+
     useEffect(() => {
         getCetegory()
     }, [])
