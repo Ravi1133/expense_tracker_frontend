@@ -1,9 +1,14 @@
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { addTransaction, getAllCategory, getTransactionByUserId } from "../api/api";
-import type { CategoryResponse, TransactionGetResponse } from "../api/apiTypes";
+import { addTransaction, getAllCategory, getTransactionByUserId, updateTransaction } from "../api/api";
+import type { CategoryResponse, TransactionBody, TransactionGetResponse } from "../api/apiTypes";
 import { getUserData } from "../utils/utilfunctions";
 import { toast } from "react-toastify";
+import Pagination from "../utils/Pagination";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { FaRegEdit } from "react-icons/fa";
+import moment from "moment";
 
 // Reuse TransactionType from previous setup
 export const TransactionType = {
@@ -14,19 +19,21 @@ export const TransactionType = {
 export type TransactionType = (typeof TransactionType)[keyof typeof TransactionType];
 
 type TransactionForm = {
+    id?: number,
     categoryId: number;
     amount: number;
     type: "INCOME" | "EXPENSE";
     description: string;
-    transactionDate: Date
+    transactionDate: string
 };
-
-// Example categories
-// const categories = [
-//   { id: 1, name: "Salary", type: "INCOME" },
-//   { id: 2, name: "Food", type: "EXPENSE" },
-//   { id: 3, name: "Investment", type: "INCOME" },
-// ];
+const defaultState: TransactionForm = {
+    id: undefined,
+    categoryId: 0,
+    amount: 0,
+    type: "" as "INCOME" | "EXPENSE",
+    description: "",
+    transactionDate: "",
+};
 
 function Transaction() {
     const {
@@ -37,16 +44,39 @@ function Transaction() {
         formState: { errors },
     } = useForm<TransactionForm>();
     const [categories, setcategories] = useState<CategoryResponse["categories"] | null>(null)
-    const [transactions, setTransactions] = useState<TransactionGetResponse["transaction"] |[]>([]);
-
+    const [transactions, setTransactions] = useState<TransactionGetResponse["transaction"]["data"] | []>([]);
+    const [paginationState, setpaginationState] = useState({
+        page: 1,
+        pageSize: 10,
+        totalCount: 10
+    })
+    const [isEdit, setIsEdit] = useState<boolean>(false)
     const onSubmit = async (data: TransactionForm) => {
-        data.transactionDate = new Date(data.transactionDate)
+        debugger
+        data.transactionDate = data.transactionDate
         // setTransactions([...transactions, data]);
         let userData = getUserData()
+        let transaction = {}
         if (!userData?.id) return
+        if (isEdit) {
+            if (!data.id) return
+            if (data.id === undefined) {
+                console.error("Transaction ID missing for update");
+                return;
+            }
 
-        let transaction = await addTransaction({ ...data, userId: userData.id })
-        toast.success("Transaction Added")
+            // Pass id along with the data
+            const transaction = await updateTransaction({ ...data });
+            toast.success("Transaction Updated");
+            setIsEdit(false)
+            reset({ ...defaultState })
+        } else {
+
+            let transaction = await addTransaction({ ...data, userId: userData.id })
+            toast.success("Transaction Added")
+
+        }
+        getAllUserTransaction()
         reset();
     };
     console.log("watch", watch())
@@ -56,17 +86,40 @@ function Transaction() {
         setcategories(categories.categories)
     }
     const getAllUserTransaction = async () => {
-        let response = await getTransactionByUserId()
+        let payload = {
+            page: paginationState.page,
+            pageSize: paginationState.pageSize,
+        }
+        let response = await getTransactionByUserId(payload)
         console.log("response", response)
-        setTransactions(response.transaction)
+        setpaginationState(response.transaction.pagination)
+        setTransactions(response.transaction.data)
     }
     useEffect(() => {
         getCetegory()
-        getAllUserTransaction()
+
     }, [])
+    useEffect(() => {
+        getAllUserTransaction()
+    }, [paginationState.page, paginationState.pageSize])
+
 
     console.log(categories, "categories")
     const today = new Date().toISOString().split("T")[0];
+
+    const pageSizeChange = (data: any) => {
+        console.log(data, "pageSizeChange")
+        setpaginationState((state) => { return { ...state, pageSize: data } })
+    }
+    const pagechange = (data: any) => {
+        console.log(data, "pageChange")
+        setpaginationState((state) => { return { ...state, page: data } })
+    }
+
+    const editTransaction = (data: any) => {
+        setIsEdit(true)
+        reset({ amount: data.amount, categoryId: data.categoryId, transactionDate: moment(data.transactionDate).format("YYYY-MM-DD"), description: data.description, type: data.type, id: data.id })
+    }
     return (
         <div className="min-h-screen bg-background p-6">
             <div className="max-w-3xl mx-auto">
@@ -123,6 +176,7 @@ function Transaction() {
                             <input
                                 type="date"
                                 max={today}
+
                                 placeholder="0.00"
                                 {...register("transactionDate", {
                                     required: "Date is required"
@@ -179,7 +233,7 @@ function Transaction() {
                 transition
               "
                         >
-                            Add Transaction
+                            {isEdit ? "Update Transaction" : "Add Transaction"}
                         </button>
                     </form>
                 </div>
@@ -194,28 +248,45 @@ function Transaction() {
                                     <th className="px-4 py-2 border-b">Category</th>
                                     <th className="px-4 py-2 border-b">Amount</th>
                                     <th className="px-4 py-2 border-b">Type</th>
+                                    <th className="px-4 py-2 border-b">Date</th>
+
                                     <th className="px-4 py-2 border-b">Description</th>
+                                    <th className="px-4 py-2 border-b">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {transactions.length === 0 && (
+                                {transactions?.length === 0 && (
                                     <tr>
                                         <td colSpan={4} className="px-4 py-2 text-center text-text-secondary">
                                             No transactions added yet
                                         </td>
                                     </tr>
                                 )}
-                                {transactions.map((tx, index) => (
+                                {transactions?.map((tx, index) => (
                                     <tr key={index} className="hover:bg-gray-50">
                                         <td className="px-4 py-2 border-b">{tx.category.name}</td>
                                         <td className="px-4 py-2 border-b">{tx.amount}</td>
+                                        <td className="px-4 py-2 border-b">{moment(tx.transactionDate).format("YYYY-MM-DD")}</td>
+
                                         <td className="px-4 py-2 border-b">{tx.type}</td>
                                         <td className="px-4 py-2 border-b">{tx.description || "-"}</td>
+                                        <td className="px-4 py-2 border-b">
+                                            <div className="flex">
+                                                <FaRegTrashAlt className="cursor-pointer" /> <FaRegEdit onClick={() => editTransaction(tx)} className="cursor-pointer ms-2" />
+                                            </div>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
+                    <Pagination
+                        page={paginationState.page}
+                        pageSize={paginationState.pageSize}
+                        totalCount={paginationState.totalCount}
+                        onPageChange={pagechange}
+                        onPageSizeChange={pageSizeChange}
+                    />
                 </div>
             </div>
         </div>

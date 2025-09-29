@@ -3,11 +3,12 @@ import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../utils/AuthContaxt";
 import { toast } from "react-toastify";
+import { getUserData } from "../utils/utilfunctions";
 
 const Header = () => {
     const globaleContext = useContext(UserContext);
     const navigate = useNavigate();
-    const userData = JSON.parse(localStorage.getItem("userData") || "")
+    const userData = getUserData()
     const handleLogout = () => {
         globaleContext?.logout()
         navigate("/login");
@@ -24,13 +25,22 @@ const Header = () => {
                 >
                     Transaction
                 </button>
-                <button
+                {userData?.role=="admin"&&
+                <><button
                     onClick={()=>navigate("/category")}
                     className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded"
                 >
                     Category
                 </button>
-                <span>Hi, {userData?.name}</span>
+                <button
+                    onClick={()=>navigate("/category")}
+                    className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded"
+                >
+                    User
+                </button>
+                </>
+                }
+                <span onClick={()=>navigate("/profile")}>Hi, {userData?.name}</span>
 
                 <button
                     onClick={handleLogout}

@@ -8,6 +8,8 @@ import { useContext, useState } from "react";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
 import { UserContext } from "./utils/AuthContaxt";
+import ProfilePage from "./pages/Profile";
+import User from "./pages/Users";
 
 function App() {
   let globaleContext= useContext(UserContext)
@@ -23,7 +25,12 @@ function App() {
 
           <Route path="/category" element={<ProtectedRoute ><> <CategoryPage /></></ProtectedRoute>} />
           <Route path="/transaction" element={<ProtectedRoute ><Transaction /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute ><ProfilePage /></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute ><ProfilePage /></ProtectedRoute>} />
+
           <Route path="/" element={<ProtectedRoute ><TransactionCharts /></ProtectedRoute>} />
+          <Route path="/users" element={<ProtectedRoute ><User /></ProtectedRoute>} />
+
         </Routes>
       </Router>
       <ToastContainer

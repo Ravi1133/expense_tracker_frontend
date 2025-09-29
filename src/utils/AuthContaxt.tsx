@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState, type ReactNode } from "react";
-import { loginUser } from "../api/api";
-import type { LoginPayload } from "../api/apiTypes";
+import { getAllCategory, loginUser } from "../api/api";
+import type { CategoryResponse, LoginPayload } from "../api/apiTypes";
 
 // Define what you want to store in context
 export type User = {
@@ -10,6 +10,7 @@ export type User = {
     id: number;
     status: string;
     token: string;
+    role: string
 };
 
 type LoginPayloadType = Pick<LoginPayload, "email" | "password">;
@@ -19,6 +20,7 @@ type UserContextType = {
     login: (userData: LoginPayloadType) => Promise<User>;
     logout: () => void;
     isAuthenticated: boolean;
+    categories?: CategoryResponse["categories"]
 };
 type LoginResponse = {
     email: string,
@@ -31,6 +33,7 @@ export const UserContext = createContext<UserContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
+    const [categories, setcategories] = useState<CategoryResponse["categories"]>([])
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const login = async (userData: LoginPayloadType) => {
         // API returns full response
@@ -43,6 +46,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             gender: response.gender,
             id: response.id,
             status: response.status,
+            role: response.role
         };
         setIsAuthenticated(true)
         localStorage.setItem("token", userInfo.token);
@@ -61,6 +65,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
     }, []);
 
+    async function getCetegory() {
+        let categories = await getAllCategory()
+        setcategories(categories.categories)
+    }
+    useEffect(() => {
+        getCetegory()
+    }, [])
 
     const logout = () => {
         setUser(null);
@@ -70,7 +81,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <UserContext.Provider value={{ user, login, logout, isAuthenticated }}>
+        <UserContext.Provider value={{ user, login, logout, categories, isAuthenticated }}>
             {children}
         </UserContext.Provider>
     );

@@ -10,4 +10,11 @@ export type LoginResponse={
     id:number,
     status:string
 }
+export type PaginationProps = {
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  onPageChange: (newPage: number) => void;
+  onPageSizeChange?: (newSize: number) => void; // Optional
+};
 export type TransactionType = (typeof TransactionType)[keyof typeof TransactionType];

@@ -11,10 +11,12 @@ import {
   BarElement,
 } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
-import { useEffect, useState } from "react";
-import { getTransactionByUserId } from "../api/api";
+import { useContext, useEffect, useState } from "react";
+import { getAllTransaction, getTransactionByUserId } from "../api/api";
 import type { TransactionGetResponse } from "../api/apiTypes";
 import moment from "moment";
+import { getUserData } from "../utils/utilfunctions";
+import { UserContext } from "../utils/AuthContaxt";
 
 let momentDate = moment(new Date()).format("M")
 console.log("momentDate", momentDate)
@@ -53,13 +55,20 @@ const transactions: Transaction[] = [
   { category: "Shopping", amount: 400, type: "EXPENSE", date: "2025-09-15" },
   { category: "Freelance", amount: 1200, type: "INCOME", date: "2025-09-20" },
 ];
-
-type SingleTransaction = TransactionGetResponse["transaction"][number];
+type FiltersType = {
+  categoryId?: number;
+  type?: "INCOME" | "EXPENSE";
+  transactionDate?: string;
+  date:string
+};
+type SingleTransaction = TransactionGetResponse["transaction"]["data"][number];
+const monthsList =[{Jan:1,},{Feb:2},{March:3},{April:4},{May:5},{June:6},{July:7},{Aug:8},{Sept:9},{Oct:10},{Nov:11},{Dec:12}]
 function TransactionCharts() {
   // ----- Pie Chart Data (Category Distribution) -----
-  let [userSpecificData, setuserSpecificData] = useState<TransactionGetResponse["transaction"] | null>(null)
+  let [userSpecificData, setuserSpecificData] = useState<TransactionGetResponse["transaction"]["data"] | null>(null)
   let [refinedListData, setrefinedListData] = useState<listCharDataType[] | []>([])
-
+  const [filters, setFilters] = useState<FiltersType|{}>({});
+  let globaleContext = useContext(UserContext)
   const pieLabels = Array.from(
     new Set(userSpecificData?.map((t) => t.category.name))
   );
@@ -124,14 +133,25 @@ function TransactionCharts() {
     ],
   };
   const getTransactionUser = async () => {
-    let response = await getTransactionByUserId()
+    let payload = {
+      ...filters,
+      page: 1,
+      pageSize: 100
+    }
+    let response: any = {}
+    if (getUserData()?.role == "admin") {
+      response = await getAllTransaction(payload)
+    } else {
+      response = await getTransactionByUserId(payload)
+
+    }
     console.log("response", response)
-    setuserSpecificData(response.transaction)
+    setuserSpecificData(response.transaction.data)
     let monthlyExpenseCal = Array(12).fill(0)
     let monthlyIncomeCal = Array(12).fill(0)
-    response.transaction.map((item) => {
+    response.transaction.data.map((item: any) => {
       const monthIndex = moment(item.transactionDate).month(); // 0 for Jan, 11 for Dec
-      console.log("monthIndex",monthIndex)
+      console.log("monthIndex", monthIndex)
       if (item.type === "EXPENSE") {
         monthlyExpenseCal[monthIndex] += item.amount; // add amount
       } else if (item.type === "INCOME") {
@@ -139,7 +159,7 @@ function TransactionCharts() {
       }
     })
     console.log("monthlyIncomeCal", monthlyIncomeCal)
-    
+
     setrefinedListData([
       {
         label: "Income",
@@ -157,15 +177,32 @@ function TransactionCharts() {
         tension: 0.4,
       },
     ]
-  )
+    )
   }
   useEffect(() => {
     getTransactionUser()
-  }, [])
+  }, [filters])
+
+  // const handleFilterApply = () => {
+  //   const payload = {
+  //     ...filters,
+  //     page: 1,
+  //     pageSize: 10,
+  //   };
+
+  //   console.log("Filter Payload:", payload);
+  //   getTransactionUser()
+  //    // API call with filters
+  // };
+
+  const handleFilterReset = () => {
+    setFilters({});
+    getTransactionByUserId({ page: 1, pageSize: 10 }); // fetch default
+  };
 
   console.log("userSpecificData", userSpecificData)
-  console.log("refinedListData",refinedListData)
-
+  console.log("refinedListData", refinedListData)
+  console.log("globaleContext", globaleContext)
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-[100%] mx-auto space-y-10  px-[10%] ">
@@ -195,6 +232,129 @@ function TransactionCharts() {
             <Doughnut data={doughnutData} />
           </div>
         </div>
+      </div>
+      <div className="bg-surface p-6 rounded-2xl shadow-lg">
+        <div className="flex justify-between flex-wrap items-center gap-4 mb-6 bg-white p-4 rounded-xl shadow-md text-[12px]">
+          {/* Title */}
+          <h2 className="text-xl font-semibold text-gray-800 mr-4">
+            Transactions List
+          </h2>
+
+          {/* Category Filter */}
+          <div className="flex">
+            <div className="flex flex-col mx-2">
+              <label className="text-sm text-gray-600 mb-1">Category</label>
+              <select
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                onChange={(e) =>{
+                  if(e.target.value){
+                    setFilters({ ...filters, categoryId: parseInt(e.target.value)})
+                  }else{
+                    
+                      let newFilter= {...filters}
+                      delete newFilter.categoryId
+                      setFilters({ ...newFilter})
+
+                  }
+                  }}
+              // value={filters.categoryId}
+              >
+                <option value="">All Categories</option>
+                {globaleContext?.categories?.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Type Filter */}
+            <div className="flex flex-col mx-2">
+              <label className="text-sm text-gray-600 mb-1">Type</label>
+              <select
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                onChange={(e) => setFilters({ ...filters, type: e.target.value })}
+              // value={filters.type}
+              >
+                <option value="">All Types</option>
+                <option value="INCOME">Income</option>
+                <option value="EXPENSE">Expense</option>
+              </select>
+            </div>
+
+            {/* Date Filter */}
+            <div className="flex flex-col mx-2">
+              <label className="text-sm text-gray-600 mb-1">Start Date</label>
+              <input
+                type="date"
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+              // value={filters.date}
+              />
+            </div>
+             <div className="flex flex-col mx-2">
+              <label className="text-sm text-gray-600 mb-1">End Date</label>
+              <input
+                type="date"
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+                onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+              // value={filters.date}
+              />
+            </div>
+            
+
+            {/* Reset Filter Button */}
+            <button
+              onClick={handleFilterReset}
+              className="mt-5 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="px-4 py-2 border-b">Category</th>
+                <th className="px-4 py-2 border-b">Amount</th>
+                <th className="px-4 py-2 border-b">Type</th>
+                <th className="px-4 py-2 border-b">Date</th>
+                <th className="px-4 py-2 border-b">Description</th>
+                <th className="px-4 py-2 border-b">User</th>
+
+              </tr>
+            </thead>
+            <tbody>
+              {userSpecificData?.length === 0 && (
+                <tr>
+                  <td colSpan={4} className="px-4 py-2 text-center text-text-secondary">
+                    No transactions added yet
+                  </td>
+                </tr>
+              )}
+              {userSpecificData?.map((tx, index) => (
+                <tr key={index} className="hover:bg-gray-50">
+                  <td className="px-4 py-2 border-b">{tx.category.name}</td>
+                  <td className="px-4 py-2 border-b">{tx.amount}</td>
+                  <td className="px-4 py-2 border-b">{tx.type}</td>
+                  <td className="px-4 py-2 border-b">{moment(tx.transactionDate).format("DD-MM-YYYY")}</td>
+                  <td className="px-4 py-2 border-b">{tx.description || "-"}</td>
+                  <td className="px-4 py-2 border-b">{tx.user.name || "-"}</td>
+
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        {/* <Pagination
+                        page={paginationState.page}
+                        pageSize={paginationState.pageSize}
+                        totalCount={paginationState.totalCount}
+                        onPageChange={pagechange}
+                        onPageSizeChange={pageSizeChange}
+                    /> */}
       </div>
     </div>
   );
