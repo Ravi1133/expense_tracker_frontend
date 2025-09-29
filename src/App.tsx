@@ -4,16 +4,12 @@ import Login from "./pages/Login";
 import CategoryPage from "./pages/Category";
 import Transaction from "./pages/Transaction";
 import TransactionCharts from "./pages/TransactionChart";
-import { useContext, useState } from "react";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
-import { UserContext } from "./utils/AuthContaxt";
 import ProfilePage from "./pages/Profile";
 import User from "./pages/Users";
 
-function App() {
-  let globaleContext= useContext(UserContext)
-  
+function App() {  
   // const [isAuthenticated, setisAuthenticated] = useState(globaleContext?.isAuthenticated)
   return (
     <>

@@ -32,14 +32,6 @@ ChartJS.register(
   BarElement
 );
 
-type Transaction = {
-  category: string;
-  amount: number;
-  type: "INCOME" | "EXPENSE";
-  description?: string;
-  date: string; // ISO string
-};
-
 type listCharDataType = {
   label: string,
   data: number[],
@@ -48,26 +40,26 @@ type listCharDataType = {
   tension: number
 }
 // Example transaction data
-const transactions: Transaction[] = [
-  { category: "Salary", amount: 5000, type: "INCOME", date: "2025-09-01" },
-  { category: "Food", amount: 200, type: "EXPENSE", date: "2025-09-03" },
-  { category: "Investment", amount: 1000, type: "INCOME", date: "2025-09-10" },
-  { category: "Shopping", amount: 400, type: "EXPENSE", date: "2025-09-15" },
-  { category: "Freelance", amount: 1200, type: "INCOME", date: "2025-09-20" },
-];
+// const transactions: Transaction[] = [
+//   { category: "Salary", amount: 5000, type: "INCOME", date: "2025-09-01" },
+//   { category: "Food", amount: 200, type: "EXPENSE", date: "2025-09-03" },
+//   { category: "Investment", amount: 1000, type: "INCOME", date: "2025-09-10" },
+//   { category: "Shopping", amount: 400, type: "EXPENSE", date: "2025-09-15" },
+//   { category: "Freelance", amount: 1200, type: "INCOME", date: "2025-09-20" },
+// ];
 type FiltersType = {
   categoryId?: number;
   type?: "INCOME" | "EXPENSE";
   transactionDate?: string;
-  date:string
+  date: string
 };
 type SingleTransaction = TransactionGetResponse["transaction"]["data"][number];
-const monthsList =[{Jan:1,},{Feb:2},{March:3},{April:4},{May:5},{June:6},{July:7},{Aug:8},{Sept:9},{Oct:10},{Nov:11},{Dec:12}]
+// const monthsList =[{Jan:1,},{Feb:2},{March:3},{April:4},{May:5},{June:6},{July:7},{Aug:8},{Sept:9},{Oct:10},{Nov:11},{Dec:12}]
 function TransactionCharts() {
   // ----- Pie Chart Data (Category Distribution) -----
   let [userSpecificData, setuserSpecificData] = useState<TransactionGetResponse["transaction"]["data"] | null>(null)
   let [refinedListData, setrefinedListData] = useState<listCharDataType[] | []>([])
-  const [filters, setFilters] = useState<FiltersType|{}>({});
+  const [filters, setFilters] = useState<FiltersType | {}>({});
   let globaleContext = useContext(UserContext)
   const pieLabels = Array.from(
     new Set(userSpecificData?.map((t) => t.category.name))
@@ -246,17 +238,17 @@ function TransactionCharts() {
               <label className="text-sm text-gray-600 mb-1">Category</label>
               <select
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                onChange={(e) =>{
-                  if(e.target.value){
-                    setFilters({ ...filters, categoryId: parseInt(e.target.value)})
-                  }else{
-                    
-                      let newFilter= {...filters}
-                      delete newFilter.categoryId
-                      setFilters({ ...newFilter})
+                onChange={(e) => {
+                  if (e.target.value) {
+                    setFilters({ ...filters, categoryId: parseInt(e.target.value) })
+                  } else {
+
+                    let newFilter = { ...filters }
+                    delete newFilter.categoryId
+                    setFilters({ ...newFilter })
 
                   }
-                  }}
+                }}
               // value={filters.categoryId}
               >
                 <option value="">All Categories</option>
@@ -292,7 +284,7 @@ function TransactionCharts() {
               // value={filters.date}
               />
             </div>
-             <div className="flex flex-col mx-2">
+            <div className="flex flex-col mx-2">
               <label className="text-sm text-gray-600 mb-1">End Date</label>
               <input
                 type="date"
@@ -301,7 +293,7 @@ function TransactionCharts() {
               // value={filters.date}
               />
             </div>
-            
+
 
             {/* Reset Filter Button */}
             <button
