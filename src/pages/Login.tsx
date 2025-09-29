@@ -16,10 +16,11 @@ function Login() {
     formState: { errors },
   } = useForm<LoginFormData>();
 let navigate= useNavigate()
+
   let globaleContext= useContext(UserContext)
   console.log("globaleContext",globaleContext)
   const onSubmit = async(data: LoginFormData) => {
-    console.log("Login Data:", data);
+    // console.log("Login Data:", data);
     let response=await globaleContext?.login(data)
     console.log("response login",response)
     toast.success("login success")

@@ -24,7 +24,7 @@ type UserContextType = {
 };
 
 export const UserContext = createContext<UserContextType | undefined>(undefined);
-
+const storedUser = localStorage.getItem("userData");
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [user, setUser] = useState<User | null>(null);
     const [categories, setcategories] = useState<CategoryResponse["categories"]>([])
@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
 
     useEffect(() => {
-        const storedUser = localStorage.getItem("userData");
+        
         if (storedUser) {
             setUser(JSON.parse(storedUser));
         } else {
@@ -60,8 +60,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }, []);
 
     async function getCetegory() {
-        let categories = await getAllCategory()
-        setcategories(categories.categories)
+        console.log("storedUser",storedUser)
+        if(storedUser){
+            let categories = await getAllCategory()
+            setcategories(categories.categories)
+        }
     }
 
     useEffect(() => {
