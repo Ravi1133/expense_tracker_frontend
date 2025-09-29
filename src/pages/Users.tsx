@@ -5,22 +5,9 @@ import { getAlluser } from "../api/api";
 import type { getUsersResponse } from "../api/apiTypes";
 import Pagination from "../utils/Pagination";
 
-type User = {
-    id: number;
-    name: string;
-    age: number;
-    email: string;
-    gender: "male" | "female";
-    status: "active" | "inactive";
-};
-
-// const defaultUsers: User[] = [
-//   { id: 1, name: "Ravi", age: 25, email: "ravi@example.com", gender: "male", status: "active" },
-//   { id: 2, name: "Anita", age: 28, email: "anita@example.com", gender: "female", status: "active" },
-// ];
 
 export default function UserTable() {
-    const [users, setUsers] = useState<getUsersResponse["userData"][]>([]);
+    const [users, setUsers] = useState<getUsersResponse["userData"]>([]);
     const [paginationState, setpaginationState] = useState({
         page: 1,
         pageSize: 10,

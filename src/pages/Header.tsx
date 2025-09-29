@@ -33,7 +33,7 @@ const Header = () => {
                     Category
                 </button>
                 <button
-                    onClick={()=>navigate("/category")}
+                    onClick={()=>navigate("/users")}
                     className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded"
                 >
                     User

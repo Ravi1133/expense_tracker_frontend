@@ -39,7 +39,7 @@ export type getUsersResponse = {
         gender: string;
         status: string,
         email: string
-    }
+    }[]
 }
 
 export type UpdateUserResponse = {
@@ -89,7 +89,7 @@ export type TransactionBody = {
 }
 
 export type TransactionBodyUpdate = {
-    id: number,
+    id?: number,
     categoryId?: number,
     userId?: number,
     amount?: number,

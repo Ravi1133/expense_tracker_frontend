@@ -1,11 +1,10 @@
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { addTransaction, getAllCategory, getTransactionByUserId, updateTransaction } from "../api/api";
-import type { CategoryResponse, TransactionBody, TransactionGetResponse } from "../api/apiTypes";
+import type { CategoryResponse, TransactionGetResponse } from "../api/apiTypes";
 import { getUserData } from "../utils/utilfunctions";
 import { toast } from "react-toastify";
 import Pagination from "../utils/Pagination";
-import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { FaRegEdit } from "react-icons/fa";
 import moment from "moment";
@@ -56,7 +55,7 @@ function Transaction() {
         data.transactionDate = data.transactionDate
         // setTransactions([...transactions, data]);
         let userData = getUserData()
-        
+
         if (!userData?.id) return
         if (isEdit) {
             if (!data.id) return
@@ -66,7 +65,7 @@ function Transaction() {
             }
 
             // Pass id along with the data
-             await updateTransaction({ ...data });
+            await updateTransaction({ ...data });
             toast.success("Transaction Updated");
             setIsEdit(false)
             reset({ ...defaultState })
