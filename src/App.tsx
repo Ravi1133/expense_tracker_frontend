@@ -4,12 +4,15 @@ import Login from "./pages/Login";
 import CategoryPage from "./pages/Category";
 import Transaction from "./pages/Transaction";
 import TransactionCharts from "./pages/TransactionChart";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import ProtectedRoute from "./utils/ProtectedRoute";
 import { ToastContainer } from "react-toastify";
+import { UserContext } from "./utils/AuthContaxt";
 
 function App() {
-  const [isAuthenticated, setisAuthenticated] = useState(false)
+  let globaleContext= useContext(UserContext)
+  
+  const [isAuthenticated, setisAuthenticated] = useState(globaleContext?.isAuthenticated)
   return (
     <>
       <Router>
@@ -18,9 +21,9 @@ function App() {
           <Route path="/Login" element={<Login />} />
 
 
-          <Route path="/category" element={<ProtectedRoute isAuthenticated={isAuthenticated}><> <CategoryPage /></></ProtectedRoute>} />
-          <Route path="/transaction" element={<ProtectedRoute isAuthenticated={isAuthenticated}><Transaction /></ProtectedRoute>} />
-          <Route path="/" element={<ProtectedRoute isAuthenticated={isAuthenticated}><TransactionCharts /></ProtectedRoute>} />
+          <Route path="/category" element={<ProtectedRoute ><> <CategoryPage /></></ProtectedRoute>} />
+          <Route path="/transaction" element={<ProtectedRoute ><Transaction /></ProtectedRoute>} />
+          <Route path="/" element={<ProtectedRoute ><TransactionCharts /></ProtectedRoute>} />
         </Routes>
       </Router>
       <ToastContainer

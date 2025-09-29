@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { UserContext } from "../utils/AuthContaxt";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 type LoginFormData = {
   email: string;
@@ -14,7 +15,7 @@ function Login() {
     handleSubmit,
     formState: { errors },
   } = useForm<LoginFormData>();
-
+let navigate= useNavigate()
   let globaleContext= useContext(UserContext)
   console.log("globaleContext",globaleContext)
   const onSubmit = async(data: LoginFormData) => {
@@ -22,6 +23,7 @@ function Login() {
     let response=await globaleContext?.login(data)
     console.log("response login",response)
     toast.success("login success")
+    navigate("/")
     // alert("Login Successful!");
   };
   
