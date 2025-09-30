@@ -18,6 +18,7 @@ function Register() {
   } = useForm<FormData>();
 
   const password = watch("password");
+  console.log("password",password)
 
   const onSubmit = async(data: FormData) => {
     
