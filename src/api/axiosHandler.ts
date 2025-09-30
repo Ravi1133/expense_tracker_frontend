@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-  baseURL:  "http://13.48.144.42:5000",
+  baseURL:  "https://13.48.144.42",
   headers: {
     "Content-Type": "application/json",
   },
