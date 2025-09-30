@@ -24,7 +24,7 @@ axiosInstance.interceptors.request.use(
 // Response interceptor (optional: error handling)
 axiosInstance.interceptors.response.use(
   (response) => response,
-  (error: AxiosError) => {
+  (error: AxiosError &{details:string}) => {
     let message = "Something went wrong!";
 
     if (error.response) {
@@ -34,7 +34,11 @@ axiosInstance.interceptors.response.use(
       // Request was made but no response
       message = "No response from server. Please check your network.";
       
-    } else {
+    } else if(error.details) {
+      // Something happened setting up the request
+      message = error.details;
+    }
+    else {
       // Something happened setting up the request
       message = error.message;
     }

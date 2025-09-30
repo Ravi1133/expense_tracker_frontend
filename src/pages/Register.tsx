@@ -1,5 +1,7 @@
 import { useForm } from "react-hook-form";
 import { regsiterUser } from "../api/api";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 type FormData = {
   name: string;
@@ -16,7 +18,7 @@ function Register() {
     watch,
     formState: { errors },
   } = useForm<FormData>();
-
+  const navigate=useNavigate()
   const password = watch("password");
   console.log("password",password)
 
@@ -24,7 +26,10 @@ function Register() {
     
    let registerData=await  regsiterUser(data)
     console.log("registerData:", registerData);
-    alert("Registration successful!");
+    toast.success("Registered")
+    navigate("/login")    
+    
+    // alert("Registration successful!");
   };
 
   return (
