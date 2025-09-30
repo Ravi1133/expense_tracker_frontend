@@ -196,160 +196,178 @@ function TransactionCharts() {
   console.log("refinedListData", refinedListData)
   console.log("globaleContext", globaleContext)
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-[100%] mx-auto space-y-10  px-[10%] ">
-        <h1 className="text-3xl font-bold text-primary mb-4 text-center">Transaction Visualization</h1>
+  <div className="min-h-screen bg-background p-4 sm:p-6">
+    <div className="max-w-[100%] mx-auto space-y-10 sm:px-[5%]">
+      <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-4 text-center">
+        Transaction Visualization
+      </h1>
 
-
-        <div className="flex mx-auto  justify-around">
-          <div className="bg-surface p-6 rounded-2xl shadow-lg max-w-[450px]  px-[50px]">
-            <h2 className="text-xl font-semibold mb-4">Category Distribution (Pie Chart)</h2>
+      {/* Charts Row 1 */}
+      <div className="flex flex-col md:flex-row md:justify-around gap-6">
+        <div className="bg-surface p-4 sm:p-6 rounded-2xl shadow-lg w-full md:max-w-md">
+          <h2 className="text-lg sm:text-xl font-semibold mb-4">
+            Category Distribution (Pie Chart)
+          </h2>
+          <div className="w-full overflow-x-auto">
             <Pie data={pieData} />
-          </div>
-
-
-          <div className="bg-surface p-6 rounded-2xl shadow-lg max-w-[450px]  px-[50px]">
-            <h2 className="text-xl font-semibold mb-4">Monthly Trends (Line Chart)</h2>
-            <Line data={lineData} />
           </div>
         </div>
 
-        <div className="flex mx-auto  justify-around">
-          <div className="bg-surface p-6 rounded-2xl shadow-lg max-w-[450px]  px-[50px]">
-            <h2 className="text-xl font-semibold mb-4">Income vs Expenses (Bar Chart)</h2>
+        <div className="bg-surface p-4 sm:p-6 rounded-2xl shadow-lg w-full md:max-w-md">
+          <h2 className="text-lg sm:text-xl font-semibold mb-4">
+            Monthly Trends (Line Chart)
+          </h2>
+          <div className="w-full overflow-x-auto">
+            <Line data={lineData} />
+          </div>
+        </div>
+      </div>
+
+      {/* Charts Row 2 */}
+      <div className="flex flex-col md:flex-row md:justify-around gap-6">
+        <div className="bg-surface p-4 sm:p-6 rounded-2xl shadow-lg w-full md:max-w-md">
+          <h2 className="text-lg sm:text-xl font-semibold mb-4">
+            Income vs Expenses (Bar Chart)
+          </h2>
+          <div className="w-full overflow-x-auto">
             <Bar data={barData} />
           </div>
-          <div className="bg-surface p-6 rounded-2xl shadow-lg max-w-[450px]  px-[50px]">
-            <h2 className="text-xl font-semibold mb-4">Income vs Expenses (Doughnut Chart)</h2>
+        </div>
+
+        <div className="bg-surface p-4 sm:p-6 rounded-2xl shadow-lg w-full md:max-w-md">
+          <h2 className="text-lg sm:text-xl font-semibold mb-4">
+            Income vs Expenses (Doughnut Chart)
+          </h2>
+          <div className="w-full overflow-x-auto">
             <Doughnut data={doughnutData} />
           </div>
         </div>
       </div>
-      <div className="bg-surface p-6 rounded-2xl shadow-lg">
-        <div className="flex justify-between flex-wrap items-center gap-4 mb-6 bg-white p-4 rounded-xl shadow-md text-[12px]">
-          {/* Title */}
-          <h2 className="text-xl font-semibold text-gray-800 mr-4">
-            Transactions List
-          </h2>
+    </div>
 
+    {/* Transactions List */}
+    <div className="bg-surface p-4 sm:p-6 rounded-2xl shadow-lg mt-6">
+      <div className="flex flex-col lg:flex-row lg:justify-between flex-wrap items-start lg:items-center gap-4 mb-6 bg-white p-4 rounded-xl shadow-md text-xs sm:text-sm">
+        {/* Title */}
+        <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
+          Transactions List
+        </h2>
+
+        {/* Filters */}
+        <div className="flex flex-wrap gap-4 w-full lg:w-auto">
           {/* Category Filter */}
-          <div className="flex">
-            <div className="flex flex-col mx-2">
-              <label className="text-sm text-gray-600 mb-1">Category</label>
-              <select
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                onChange={(e) => {
-                  if (e.target.value) {
-                    setFilters({ ...filters, categoryId: parseInt(e.target.value) })
-                  } else {
-
-                    let newFilter = { ...filters }
-                    delete newFilter.categoryId
-                    setFilters({ ...newFilter })
-
-                  }
-                }}
-              // value={filters.categoryId}
-              >
-                <option value="">All Categories</option>
-                {globaleContext?.categories?.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Type Filter */}
-            <div className="flex flex-col mx-2">
-              <label className="text-sm text-gray-600 mb-1">Type</label>
-              <select
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                onChange={(e) => setFilters({ ...filters, type: e.target.value })}
-              // value={filters.type}
-              >
-                <option value="">All Types</option>
-                <option value="INCOME">Income</option>
-                <option value="EXPENSE">Expense</option>
-              </select>
-            </div>
-
-            {/* Date Filter */}
-            <div className="flex flex-col mx-2">
-              <label className="text-sm text-gray-600 mb-1">Start Date</label>
-              <input
-                type="date"
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-              // value={filters.date}
-              />
-            </div>
-            <div className="flex flex-col mx-2">
-              <label className="text-sm text-gray-600 mb-1">End Date</label>
-              <input
-                type="date"
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
-                onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
-              // value={filters.date}
-              />
-            </div>
-
-
-            {/* Reset Filter Button */}
-            <button
-              onClick={handleFilterReset}
-              className="mt-5 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+          <div className="flex flex-col w-full sm:w-auto">
+            <label className="text-xs sm:text-sm text-gray-600 mb-1">
+              Category
+            </label>
+            <select
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => {
+                if (e.target.value) {
+                  setFilters({ ...filters, categoryId: parseInt(e.target.value) })
+                } else {
+                  let newFilter = { ...filters }
+                  delete newFilter.categoryId
+                  setFilters({ ...newFilter })
+                }
+              }}
             >
-              Reset
-            </button>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-100">
-                <th className="px-4 py-2 border-b">Category</th>
-                <th className="px-4 py-2 border-b">Amount</th>
-                <th className="px-4 py-2 border-b">Type</th>
-                <th className="px-4 py-2 border-b">Date</th>
-                <th className="px-4 py-2 border-b">Description</th>
-                <th className="px-4 py-2 border-b">User</th>
-
-              </tr>
-            </thead>
-            <tbody>
-              {userSpecificData?.length === 0 && (
-                <tr>
-                  <td colSpan={4} className="px-4 py-2 text-center text-text-secondary">
-                    No transactions added yet
-                  </td>
-                </tr>
-              )}
-              {userSpecificData?.map((tx, index) => (
-                <tr key={index} className="hover:bg-gray-50">
-                  <td className="px-4 py-2 border-b">{tx.category.name}</td>
-                  <td className="px-4 py-2 border-b">{tx.amount}</td>
-                  <td className="px-4 py-2 border-b">{tx.type}</td>
-                  <td className="px-4 py-2 border-b">{moment(tx.transactionDate).format("DD-MM-YYYY")}</td>
-                  <td className="px-4 py-2 border-b">{tx.description || "-"}</td>
-                  <td className="px-4 py-2 border-b">{tx.user.name || "-"}</td>
-
-                </tr>
+              <option value="">All Categories</option>
+              {globaleContext?.categories?.map((item) => (
+                <option key={item.id} value={item.id}>
+                  {item.name}
+                </option>
               ))}
-            </tbody>
-          </table>
+            </select>
+          </div>
+
+          {/* Type Filter */}
+          <div className="flex flex-col w-full sm:w-auto">
+            <label className="text-xs sm:text-sm text-gray-600 mb-1">Type</label>
+            <select
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => setFilters({ ...filters, type: e.target.value })}
+            >
+              <option value="">All Types</option>
+              <option value="INCOME">Income</option>
+              <option value="EXPENSE">Expense</option>
+            </select>
+          </div>
+
+          {/* Start Date */}
+          <div className="flex flex-col w-full sm:w-auto">
+            <label className="text-xs sm:text-sm text-gray-600 mb-1">
+              Start Date
+            </label>
+            <input
+              type="date"
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+            />
+          </div>
+
+          {/* End Date */}
+          <div className="flex flex-col w-full sm:w-auto">
+            <label className="text-xs sm:text-sm text-gray-600 mb-1">
+              End Date
+            </label>
+            <input
+              type="date"
+              className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+            />
+          </div>
+
+          {/* Reset Button */}
+          <button
+            onClick={handleFilterReset}
+            className="mt-5 sm:mt-auto px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition w-full sm:w-auto"
+          >
+            Reset
+          </button>
         </div>
-        {/* <Pagination
-                        page={paginationState.page}
-                        pageSize={paginationState.pageSize}
-                        totalCount={paginationState.totalCount}
-                        onPageChange={pagechange}
-                        onPageSizeChange={pageSizeChange}
-                    /> */}
+      </div>
+
+      {/* Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-left border-collapse text-sm sm:text-base">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="px-4 py-2 border-b">Category</th>
+              <th className="px-4 py-2 border-b">Amount</th>
+              <th className="px-4 py-2 border-b">Type</th>
+              <th className="px-4 py-2 border-b">Date</th>
+              <th className="px-4 py-2 border-b">Description</th>
+              <th className="px-4 py-2 border-b">User</th>
+            </tr>
+          </thead>
+          <tbody>
+            {userSpecificData?.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-4 py-2 text-center text-text-secondary">
+                  No transactions added yet
+                </td>
+              </tr>
+            )}
+            {userSpecificData?.map((tx, index) => (
+              <tr key={index} className="hover:bg-gray-50">
+                <td className="px-4 py-2 border-b">{tx.category.name}</td>
+                <td className="px-4 py-2 border-b">{tx.amount}</td>
+                <td className="px-4 py-2 border-b">{tx.type}</td>
+                <td className="px-4 py-2 border-b">
+                  {moment(tx.transactionDate).format("DD-MM-YYYY")}
+                </td>
+                <td className="px-4 py-2 border-b">{tx.description || "-"}</td>
+                <td className="px-4 py-2 border-b">{tx.user.name || "-"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
-  );
+  </div>
+);
+
 }
 
 export default TransactionCharts;
