@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import { regsiterUser } from "../api/api";
 
 type FormData = {
   name: string;
@@ -18,8 +19,10 @@ function Register() {
 
   const password = watch("password");
 
-  const onSubmit = (data: FormData) => {
-    console.log("Form Data:", data);
+  const onSubmit = async(data: FormData) => {
+    
+   let registerData=await  regsiterUser(data)
+    console.log("registerData:", registerData);
     alert("Registration successful!");
   };
 

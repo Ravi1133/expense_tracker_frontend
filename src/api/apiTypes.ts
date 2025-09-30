@@ -1,3 +1,20 @@
+export type regsiterPayload = {
+    email: string,
+    password: string,
+    name: string,
+    gender: string
+}
+export type regsiterResponse = {
+    message: string,
+    userData: {
+        id: string,
+        email: string,
+        password: string,
+        name: string,
+        gender: string
+        role: string
+    }
+}
 export type LoginPayload = {
     email: string;
     password: string;
@@ -20,8 +37,8 @@ export type UpdateUserBody = {
 };
 
 export type getUsersBody = {
-    page?:number,
-    pageSize?:number,
+    page?: number,
+    pageSize?: number,
     name?: string;
     gender?: string;
     status?: string
@@ -29,12 +46,12 @@ export type getUsersBody = {
 }
 export type getUsersResponse = {
     message: string,
-    skip:number,
-    totalCount:number,
-    totalPage:number,
-    pageSize:number,
+    skip: number,
+    totalCount: number,
+    totalPage: number,
+    pageSize: number,
     userData: {
-        id:number,
+        id: number,
         name: string;
         gender: string;
         status: string,

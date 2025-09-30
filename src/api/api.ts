@@ -23,7 +23,7 @@ const api = {
 
 
 import axiosInstance from "./axiosHandler";
-import type { Category, CategoryBody, CategoryResponse, getUsersBody, getUsersResponse, LoginPayload, LoginResponse, TransactionAddResponse, TransactionBody, TransactionBodyUpdate, transactionGetBody, TransactionGetResponse, UpdateUserBody, UpdateUserResponse } from "./apiTypes"
+import type { Category, CategoryBody, CategoryResponse, getUsersBody, getUsersResponse, LoginPayload, LoginResponse, regsiterPayload, regsiterResponse, TransactionAddResponse, TransactionBody, TransactionBodyUpdate, transactionGetBody, TransactionGetResponse, UpdateUserBody, UpdateUserResponse } from "./apiTypes"
 
 type ApiOptions<T = any> = {
     url: string;
@@ -47,7 +47,13 @@ export async function apiRequest<T = any, R = any>({
     return response.data;
 }
 
-
+export const regsiterUser = async (payload: regsiterPayload): Promise<regsiterResponse> => {
+    return apiRequest<regsiterPayload, regsiterResponse>({
+        url: api.auth.register,
+        method: "POST",
+        data: payload,
+    });
+};
 export const loginUser = async (payload: LoginPayload): Promise<LoginResponse> => {
     return apiRequest<LoginPayload, LoginResponse>({
         url: api.auth.login,
